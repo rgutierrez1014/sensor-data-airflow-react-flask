@@ -176,3 +176,4 @@ yarn-debug.log*
 yarn-error.log*
 
 client_secrets*
+apps/airflow/logs

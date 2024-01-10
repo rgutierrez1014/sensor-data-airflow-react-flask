@@ -18,7 +18,7 @@ def do_something_fn():
     """
     Do something
     """
-    print('hello world')
+    return 'hello world!'
 
 
 def do_something(dag):
@@ -33,7 +33,7 @@ def do_something_again_fn():
     """
     Do something
     """
-    print('hello world')
+    return 'hello world, again!'
 
 
 def do_something_again(dag):
