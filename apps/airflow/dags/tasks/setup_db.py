@@ -22,8 +22,11 @@ def setup_db_fn():
     conn.autocommit = True
     cur = conn.cursor()
     # create db
-    cur.execute(sql.SQL('CREATE DATABASE {};').format(
-        sql.Identifier(db)))
+    try:
+        cur.execute(sql.SQL('CREATE DATABASE {};').format(
+            sql.Identifier(db)))
+    except psycopg2.errors.DuplicateDatabase:
+        pass
     # TODO catch "database exists" error
     conn.close()
     # create table
@@ -36,7 +39,7 @@ def setup_db_fn():
     conn.autocommit = True
     cur = conn.cursor()
     query = """CREATE TABLE IF NOT EXISTS sensor_data (
-        id int, 
+        id int primary key generated always as identity, 
         run_id varchar,
         ufp_mean decimal,
         ufp_median decimal,
@@ -47,7 +50,7 @@ def setup_db_fn():
         no2_mean decimal,
         no2_median decimal,
         no2_stddev decimal,
-        created_at datetime
+        created_at timestamp
     )"""
     cur.execute(query)
     conn.close()
