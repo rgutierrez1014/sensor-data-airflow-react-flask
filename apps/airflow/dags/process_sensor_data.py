@@ -1,13 +1,12 @@
+import csv
 from datetime import timedelta
 
 import airflow
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
+import datadotworld as dw
 import requests
-
-
-data_world_token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJweXRob246ci1hLWd1dGllcnJleiIsImlzcyI6ImNsaWVudDpweXRob246YWdlbnQ6ci1hLWd1dGllcnJlejo6ODg5NmFiNDctOWU2OC00YzlmLThmNDAtMTVmMDNmZDRmZjZmIiwiaWF0IjoxNzA0NzU4NTE5LCJyb2xlIjpbInVzZXJfYXBpX2FkbWluIiwidXNlcl9hcGlfcmVhZCIsInVzZXJfYXBpX3dyaXRlIl0sImdlbmVyYWwtcHVycG9zZSI6dHJ1ZSwic2FtbCI6e319.bMOxJLGG2qJtKIZbXCt_L3nldkw7p2XCj9OXslCDSmJw7qvBJ4p2Nrs-_rH-b4L7ApsnBSPhbwBpHBC8-8MmuA"
 
 
 """
@@ -18,7 +17,12 @@ def do_something_fn():
     """
     Do something
     """
-    return 'hello world!'
+    with dw.open_remote_file('r-a-gutierrez/sensor-data-test', 'argentine-zones-north-winds-stats.csv', mode='r') as f:
+        reader = csv.DictReader(f)
+        for i, row in enumerate(reader):
+            if i == 5:
+                break
+            print(row)
 
 
 def do_something(dag):
