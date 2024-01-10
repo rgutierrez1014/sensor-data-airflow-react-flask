@@ -69,8 +69,6 @@ x-airflow-common:
     # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-  env_file:
-    - ./images/airflow/.env
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/apps/airflow/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/apps/airflow/logs:/opt/airflow/logs
