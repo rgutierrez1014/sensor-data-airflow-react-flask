@@ -69,7 +69,7 @@ You'll need to create a [data.world](https://data.world) account. Once you have 
 
 **Create necessary files**
 
-1. Create the `logs` and `plugins` folder for Airflow, under `apps/airflow`.
+1. Create the `logs` and `plugins` folder for Airflow, under `apps/airflow`. These are necessary for Airflow.
 2. Create a `.env` file in the project base directory with the string "AIRFLOW_UID=5000".
 3. Create a file called `config` within `images/airflow` with the following content:
 ```
