@@ -49,7 +49,7 @@ Sets up a basic API. Utilizes the Airflow API to enable a DAG and trigger a DAG 
 
 Available at http://localhost:3000.
 
-Set up using `create-react-app` and comes with hot reloading.
+Set up using [create-react-app](https://github.com/facebook/create-react-app) and comes with hot reloading. View those docs for more info.
 
 Provides some buttons to trigger a DAG run and query db for data. Flash messages at the top to indicate status changes. Data displays in a table when available. No authentication set up, just hits the Flask API to perform tasks.
 
@@ -63,9 +63,11 @@ You can check if you have enough memory by running this command:
 docker run --rm "debian:bullseye-slim" bash -c 'numfmt --to iec $(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE))))'
 ```
 
-**Create necessary files**
+**Set up data.world**
 
-First housekeeping:
+You'll need to create a [data.world](https://data.world) account. Once you have an account, you'll need to enable the Python integration. Then, go to your profile, then Advanced, then copy the API token for the Read/Write scope. Keep this in a safe place.
+
+**Create necessary files**
 
 1. Create the `logs` and `plugins` folder for Airflow, under `apps/airflow`.
 2. Create a `.env` file in the project base directory with the string "AIRFLOW_UID=5000".
@@ -77,13 +79,17 @@ auth_token = <your token here>
 [r]
 auth_token = <your token here>
 ```
-Replace `<your token here>` with the data.world API token given to you.
+Replace `<your token here>` with the data.world API token you retrieved above.
+
+Normally, you would configure the `datadotworld` Python library by calling `dw configure -t <token>` but I couldn't get that to work in the container setup, so I resorted to creating the file manually and copying it into place instead. It's hacky but it works.
+
+Note: supposedly, only the "default" config is necessary, but during my testing, I ended up needing an "r" section as well, for reading files.
 
 **Initialize Airflow**
 
 Next, on **all operating systems**, you need to run database migrations and create the first user account. To do this, run.
 
-``` bash
+```bash
 docker compose up airflow-init
 ```
 
@@ -102,7 +108,7 @@ The account created has the login `airflow` and the password `airflow`.
 
 Now we can run Airflow and initialize the rest of the services.
 
-```
+```bash
 docker compose up
 ```
 
@@ -126,6 +132,61 @@ Basic username password authentication is currently supported for the REST API, 
 
 The webserver is available at: `http://localhost:8080`. The default account has the login `airflow` and the password `airflow`.
 
-**Perform a full end-to-end test**
+**View logs**
+
+There are three ways to view the logs of a particular service:
+
+You can use the handy `show_logs` script.
+```bash
+scripts/show_logs.sh SERVICE
+```
+Where SERVICE is the name of the service in the `docker-compose.yml` file.
+
+You can also run the command directly:
+```bash
+docker logs -t -f sensor-data-airflow-react-flask-SERVICE-1
+```
+The suffix `-1` just means we're running a single container of that service.
+
+Finally, you can also go to Docker Desktop, click Containers, click the arrow next to our Compose environment to expand the containers list, then just click the name of the container. You'll be taken to the Logs tab.
+
+**Connect to a service directly**
+
+There are three ways to connect to a particular service's container directly:
+
+You can use the handy `connect_to` script to connect to a service's container directly.
+```bash
+scripts/connect_to.sh SERVICE
+```
+Where SERVICE is the name of the service in the `docker-compose.yml` file.
+
+You can also run the command directly.
+```bash
+docker compose -f docker-compose.yml exec SERVICE /bin/bash
+```
+The suffix `-1` just means we're running a single container of that service.
+
+Finally, you can also go to Docker Desktop, click Containers, click the arrow next to our Compose environment to expand the containers list, then click the three dots for the container you wish to connect to and select Open in Terminal. Alternatively, click the name of the container, then select the Terminal tab.
+
+**Stop/shutdown the environment**
+
+Stopping the environment will "pause" the containers but not destroy them. If we shutdown the environment, we will destroy the containers and the internal network. Our volumes and images will remain, however, unless we specify to destroy them too.
+
+If you are running the environment in attached mode, hitting Ctrl+C *stops* the environment, it does not shut it down.
+```
+# to stop...
+docker compose stop
+
+# to shutdown...
+docker compose down
+
+# to shutdown and delete volumes, containers, and images...
+docker compose down --volumes --remove-orphans --rmi all
+```
+The final option is recommended for this particular app environment.
+
+To start it back up, we'll need to do `docker compose up airflow-init` again first, then use `docker compose up` (remember `-d` if using detached mode).
+
+## Perform a full end-to-end test
 
 Open Airflow in your browser. Ensure the webserver is active and log in using the credentials listed above. Ensure there are one or more DAGs available to run. Now visit the React frontend at `http://localhost:3000`. Click "Trigger DAG" and confirm the progress over in Airflow. Once the DAG has completed running, go back to the React app and click "Refresh Data". You should now see a table of data.
