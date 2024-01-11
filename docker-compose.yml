@@ -305,6 +305,11 @@ services:
       - 8000:8000
     environment:
       APP_ENV: development
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      SENSOR_DATA_DB: sensor_data
     volumes:
       # code bind mount
       - type: bind

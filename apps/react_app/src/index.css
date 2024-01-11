@@ -17,6 +17,18 @@ code {
   padding: 20px;
 }
 
+.flash-message {
+  display: none;
+}
+
+.flash-message.has-message {
+  display: block;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  background-color: #eee;
+  margin-bottom: 15px;
+}
+
 .form-element {
   margin-bottom: 15px;
 }
