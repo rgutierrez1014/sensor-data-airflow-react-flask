@@ -1,3 +1,7 @@
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -19,6 +23,8 @@ code {
 
 .flash-message {
   display: none;
+  animation: fade-out 1s ease-out 4s 1 normal forwards;
+  -webkit-animation: fade-out 1s ease-out 4s 1 normal forwards;
 }
 
 .flash-message.has-message {
@@ -29,28 +35,31 @@ code {
   margin-bottom: 15px;
 }
 
-.form-element {
-  margin-bottom: 15px;
+@keyframes fade-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-.form-element label {
-  display: block;
-  padding-bottom: 10px;
+@-webkit-keyframes fade-out {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-input[type="submit"] {
-  margin-top: 10px;
+table {
+  border: 1px solid #eee;
+  border-collapse: collapse;
 }
 
-dl {
-  margin-top: 20px;
-  padding: 10px;
-  border: 1px dashed #eee;
-  max-width: 50%;
+td, th {
+  padding: 10px 15px;
 }
 
-dl dt {
-  padding-bottom: 10px;
+thead tr th {
+  border-bottom: 1px solid #eee;
+}
+
+tbody tr td {
+  text-align: center;
 }
 
 .multiline {

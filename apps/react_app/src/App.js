@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import moment from 'moment';
 
 
 function App() {
@@ -72,7 +73,7 @@ function App() {
       <button onClick={() => handleRefreshData()}>Refresh Data</button>
       <br />
       <h4>Current Data</h4>
-      <div>{!data ? (<p>No data yet. Data will be available once it has been processed by Airflow.</p>) : (
+      <div>{!data ? (<p>No data yet. Click "Refresh Data" above to see if the data has been processed by Airflow.</p>) : (
         <>
           <small>Terminology: UFP = Ultrafine Particles, BC = Black Carbon, NO2 = Nitrogen Dioxide</small>
           <table>
@@ -94,7 +95,7 @@ function App() {
               {data.map((row) => {
                 return (
                   <tr key={row.id}>
-                    <td>{row.created_at}</td>
+                    <td>{moment(row.created_at).format('MM/DD/YYYY hh:mm:ss A [UTC]')}</td>
                     <td>{parseFloat(row.ufp_mean).toFixed(2)}</td>
                     <td>{parseFloat(row.ufp_median).toFixed(2)}</td>
                     <td>{parseFloat(row.ufp_stddev).toFixed(2)}</td>
