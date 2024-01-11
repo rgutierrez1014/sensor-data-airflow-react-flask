@@ -32,7 +32,7 @@ Optionally, you can enable `flower` by adding `--profile flower` option, e.g. `d
 
 All these services allow you to run Airflow with [CeleryExecutor](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/executor/celery.html). For more information, see [Architecture Overview](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/overview.html).
 
-One DAG is included, `process_sensor_data`, which does the following:
+DAG definitions can be found in `apps/airflow/dags`. One DAG is included, `process_sensor_data`, which does the following:
 
 1. Creates its own Postgres db and table to store its data. In a production environment, this would be done elsewhere but for simplicity I've just included it as a step in the DAG.
 2. Query a dataset from [data.world](https://data.world) using an API token, then perform some computation and store in a database table. Right now, each run produces the same data since it's computing from the entire dataset and the dataset does not change.
@@ -107,3 +107,25 @@ docker compose up
 ```
 
 Add `-d` to run in detached mode.
+
+You can view the status of all containers by pulling up Docker Desktop or by running `docker ps`.
+
+## Usage
+
+**Accessing the Airflow web interface**
+
+Once the cluster has started up, you can log in to the web interface and begin experimenting with DAGs.
+
+The webserver is available at: `http://localhost:8080`. The default account has the login `airflow` and the password `airflow`.
+
+Note: The Airflow webserver may not be available immediately after all services have returned a `Started` state. I've found it is usually available after waiting a minute or two from this point.
+
+**Sending requests to the Airflow REST API**
+
+Basic username password authentication is currently supported for the REST API, which means you can use common tools to send requests to the API.
+
+The webserver is available at: `http://localhost:8080`. The default account has the login `airflow` and the password `airflow`.
+
+**Perform a full end-to-end test**
+
+Open Airflow in your browser. Ensure the webserver is active and log in using the credentials listed above. Ensure there are one or more DAGs available to run. Now visit the React frontend at `http://localhost:3000`. Click "Trigger DAG" and confirm the progress over in Airflow. Once the DAG has completed running, go back to the React app and click "Refresh Data". You should now see a table of data.
