@@ -15,6 +15,9 @@ function App() {
   const setFlash = (msg) => {
     setFlashMessage(msg);
     setFlashClass('flash-message has-message');
+    setTimeout(() => {
+      clearFlash();
+    }, 5000);
   }
 
   const handleRefreshData = (e) => {
@@ -22,12 +25,9 @@ function App() {
     axios
       .get('http://localhost:8000/get-current-data')
       .then((res) => {
-        let data = res.data;
+        let data = res.data.data;
         setData(data);
         setFlash('Current data retrieved successfully!');
-        setTimeout(() => {
-          clearFlash();
-        }, 5000);
       })
       .catch((error) => {
         if (error.response) {
@@ -38,7 +38,6 @@ function App() {
           console.log("Error: ", error.message);
         }
         setFlash('An error occurred while refreshing data! Please try again.');
-        setData(null);
       });
   }
   const handleTriggerDAG = (e) => {
@@ -48,9 +47,6 @@ function App() {
       .then((res) => {
         console.log('DAG trigger successful!');
         setFlash('DAG trigger successful!');
-        setTimeout(() => {
-          clearFlash();
-        }, 5000);
       })
       .catch((error) => {
         if (error.response) {
@@ -60,7 +56,7 @@ function App() {
         } else {
           console.log("Error: ", error.message);
         }
-        setFlash('An error occurred while trying to trigger the DAG! Please try again.')
+        setFlash('An error occurred while trying to trigger the DAG! Please try again.');
       });
   }
   

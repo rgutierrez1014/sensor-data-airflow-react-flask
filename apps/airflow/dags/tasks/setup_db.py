@@ -25,7 +25,7 @@ def setup_db_fn():
     try:
         cur.execute(sql.SQL('CREATE DATABASE {};').format(
             sql.Identifier(db)))
-    except psycopg2.errors.DuplicateDatabase:
+    except (psycopg2.errors.DuplicateDatabase, psycopg2.errors.UniqueViolation):
         pass
     # TODO catch "database exists" error
     conn.close()
