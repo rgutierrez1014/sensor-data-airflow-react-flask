@@ -12,7 +12,8 @@ import psycopg2
 
 def process_data_fn(**kwargs):
     """
-    Do something
+    Grab data from data.world and calculate mean, median, and 
+    standard deviation.
     """
     pg_user = os.getenv('POSTGRES_USER')
     pg_pw = os.getenv('POSTGRES_PASSWORD')

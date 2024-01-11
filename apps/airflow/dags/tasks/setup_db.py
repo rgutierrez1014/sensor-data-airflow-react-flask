@@ -8,7 +8,7 @@ from psycopg2 import sql
 
 def setup_db_fn():
     """
-    Do something
+    Create database and table in Postgres
     """
     pg_user = os.getenv('POSTGRES_USER')
     pg_pw = os.getenv('POSTGRES_PASSWORD')
@@ -27,7 +27,6 @@ def setup_db_fn():
             sql.Identifier(db)))
     except (psycopg2.errors.DuplicateDatabase, psycopg2.errors.UniqueViolation):
         pass
-    # TODO catch "database exists" error
     conn.close()
     # create table
     conn = psycopg2.connect(
