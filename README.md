@@ -6,13 +6,31 @@ Data is sensor data from an instrumented electric vehicle taking various air pol
 
 The Airflow piece was taken directly from Airflow's own documentation on running in a Docker Compose setup. I will be providing an abridged version of the documentation here, but you can refer to the official docs here for the full breakdown: [Running Airflow in Docker](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html).
 
+The code and files for all the application parts reside in the `apps` folder, each with their own folder. The Dockerfiles and relevant files for all the application parts reside in the `images` folder, similarly each with their own folder.
+
+Environment variables are utilized throughout for credentials.
+
 ## Overview
 
 This application environment is broken into three pieces:
 
 ### Apache Airflow
 
-Contains all the necessary components for running Airflow, including the webserver, scheduler, worker, database, and redis, among other things. 
+Contains all the necessary components for running Airflow. Here are the service definitions:
+
+- `airflow-scheduler` - The scheduler monitors all tasks and DAGs, then triggers the task instances once their dependencies are complete.
+- `airflow-webserver` - The webserver is available at http://localhost:8080.
+- `airflow-worker` - The worker that executes the tasks given by the scheduler.
+- `airflow-triggerer` - The triggerer runs an event loop for deferrable tasks.
+- `airflow-init` - The initialization service.
+- `postgres` - The database.
+- `redis` - The redis broker that forwards messages from scheduler to worker.
+
+Optionally, you can enable `flower` by adding `--profile flower` option, e.g. `docker compose --profile flower up`, or by explicitly specifying it on the command line e.g. `docker compose up flower`.
+
+- `flower` - The flower app for monitoring the environment. It is available at http://localhost:5555.
+
+All these services allow you to run Airflow with [CeleryExecutor](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/executor/celery.html). For more information, see [Architecture Overview](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/overview.html).
 
 One DAG is included, `process_sensor_data`, which does the following:
 
@@ -23,13 +41,35 @@ Note: the installation and spinning up of all the containers necessary for Airfl
 
 ### Flask backend
 
+Available at http://localhost:8000.
+
 Sets up a basic API. Utilizes the Airflow API to enable a DAG and trigger a DAG run; also queries database for data. Uses basic authentication, utilizing the default credentials set up for Airflow.
 
 ### React frontend
 
+Available at http://localhost:3000.
+
+Set up using `create-react-app` and comes with hot reloading.
+
 Provides some buttons to trigger a DAG run and query db for data. Flash messages at the top to indicate status changes. Data displays in a table when available. No authentication set up, just hits the Flask API to perform tasks.
- 
-- create "config" file in images/airflow with the following content:
+
+## Setup
+
+Make sure you have Docker or Docker Desktop installed on your machine, and at least 4 GB of memory is allocated to Docker. Additionally, make sure you have Docker Compose v2.14.0 or newer installed on your machine.
+
+You can check if you have enough memory by running this command:
+
+```bash
+docker run --rm "debian:bullseye-slim" bash -c 'numfmt --to iec $(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE))))'
+```
+
+**Create necessary files**
+
+First housekeeping:
+
+1. Create the `logs` and `plugins` folder for Airflow, under `apps/airflow`.
+2. Create a `.env` file in the project base directory with the string "AIRFLOW_UID=5000".
+3. Create a file called `config` within `images/airflow` with the following content:
 ```
 [DEFAULT]
 auth_token = <your token here>
@@ -37,3 +77,33 @@ auth_token = <your token here>
 [r]
 auth_token = <your token here>
 ```
+Replace `<your token here>` with the data.world API token given to you.
+
+**Initialize Airflow**
+
+Next, on **all operating systems**, you need to run database migrations and create the first user account. To do this, run.
+
+``` bash
+docker compose up airflow-init
+```
+
+After initialization is complete, you should see a message like this:
+
+```
+airflow-init_1        | Upgrades done
+airflow-init_1        | Admin user airflow created
+airflow-init_1        | 
+start_airflow-init_1 exited with code 0
+```
+
+The account created has the login `airflow` and the password `airflow`.
+
+**Initialize all services**
+
+Now we can run Airflow and initialize the rest of the services.
+
+```
+docker compose up
+```
+
+Add `-d` to run in detached mode.
