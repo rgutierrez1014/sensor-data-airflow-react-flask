@@ -65,7 +65,7 @@ docker run --rm "debian:bullseye-slim" bash -c 'numfmt --to iec $(echo $(($(getc
 
 **Set up data.world**
 
-You'll need to create a [data.world](https://data.world) account. Once you have an account, you'll need to enable the Python integration. Then, go to your profile, then Advanced, then copy the API token for the Read/Write scope. Keep this in a safe place.
+To use the data.world API, you'll need to create an account and create an API token for yourself. Visit [data.world](https://data.world) and create an account. Once you have an account, you'll need to enable the Python integration. Go to the integrations page, search for the Python integration and enable it. Then, click your avatar at the top right and select Settings. Click Advanced, and copy the API token for the "Read/Write" scope. Feel free to copy one with a larger scope if you are adding additional functionality. Keep this in a safe place.
 
 **Create necessary files**
 
