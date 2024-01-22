@@ -46,6 +46,7 @@ def create_app():
 
     @app.route("/")
     def hello():
+        print('testing a change!')
         return "Hello, World!"
     
     @app.route("/trigger", methods=['GET'])
